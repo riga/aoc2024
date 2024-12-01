@@ -1,0 +1,7 @@
+*.pyc
+*.log
+*.DS_Store
+__pycache__
+.vscode
+.aoc_session
+template
