@@ -1,5 +1,9 @@
 # coding: utf-8
 
+"""
+https://adventofcode.com/2024/day/1
+"""
+
 from __future__ import annotations
 
 import heapq
@@ -37,4 +41,9 @@ def solution(data: list[str], part: Part) -> int | None:
 
 
 if __name__ == "__main__":
-    Solver(year=2024, day=1, truth_a=1319616, truth_b=27267728).solve(solution, part="x")
+    Solver(
+        year=2024,
+        day=1,
+        truth_a=1319616,
+        truth_b=27267728,
+    ).solve(solution, part="x", submit=False)

@@ -5,3 +5,4 @@ __pycache__
 .vscode
 .aoc_session
 template
+example*.txt

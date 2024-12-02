@@ -1,3 +1,5 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:81c0abe0eb5d2f2acfaa2eef1749d84917ebb912c98353e5c42bfb8b9d8ba9e2
-size 79
+aocd==0.1
+mypy~=1.13.0
+flake8~=7.1.1
+flake8-commas~=4.0.0
+flake8-quotes~=3.4.0

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+import time
 import inspect
 from typing import Callable, Literal
 
@@ -28,7 +29,7 @@ class Solver:
     .. code-block:: python
 
         def solution(data: list[str], part: Part) -> int | None:
-            # ...
+            # return None to download input but skip result handling / submission, and integer otherwise
             return None
 
         Solver(year=..., day=...).solve(solution, part="a")
@@ -83,7 +84,7 @@ class Solver:
         # solve both parts when "x" is given
         if part == "x":
             self.solve(func, part="a", submit=submit, example=example, example_index=example_index)
-            print("-" * 50)
+            print("")
             self.solve(func, part="b", submit=submit, example=example, example_index=example_index)
             return
 
@@ -99,7 +100,7 @@ class Solver:
         if os.path.exists(data_path):
             data_raw = open(data_path).read()
         else:
-            data_raw = (self.puzzle.examples[0] if example else self.puzzle).input_data
+            data_raw = (self.puzzle.examples[example_index] if example else self.puzzle).input_data
             with open(data_path, "w") as f:
                 f.write(data_raw)
 
@@ -108,39 +109,76 @@ class Solver:
         if strip:
             data = [line for line in (line.strip() for line in data) if line]
 
+        # header
+        header = f"🎄 {puzzle_id}"
+        if self.has_session:
+            header += f"  ─  {self.puzzle.title}"
+        header += f"  ─  {len(data)} data lines"
+        header += " 🎄"
+        width = max(len(header) + 2, 40)
+        print(f"{'━' * width}\n{header}\n{'─' * width}")
+
         # run the solution function
-        result = func(data, part)
+        t1 = time.perf_counter()
+        runtime = 0
+        try:
+            result = func(data, part)
+        except:
+            print(f"🚫 exception after {runtime:.2f}s")
+            raise
+        finally:
+            runtime = time.perf_counter() - t1
 
         # handle the result
         if result is None:
-            print(f"{puzzle_id}: no solution provided")
+            print("❗️ no solution provided")
             return
-        print(f"{puzzle_id}: {result}")
+        print(f"✨ solution : {result}")
         if not example and (truth := getattr(self, f"truth_{part}")) is not None:
-            print(f"{'✅' if result == truth else '❌'} truth : {truth}")
+            print(f"{'✅' if result == truth else '❌'} truth    : {truth}")
+        print(f"⏱️  runtime  : {human_time_diff(runtime)}")
 
         # check if submission is an option
-        if example and submit:
+        if example:
             submit = False
         if submit:
             if not self.has_puzzle and not self.has_session:
-                print("❌ submission requires AOC_SESSION")
+                print("🚫 submission requires AOC_SESSION")
                 submit = False
             elif self.puzzle.answered(part):
-                print("✅ puzzle already answered")
+                print("🎖️  puzzle already answered")
                 submit = False
 
+        # optionally stop
+        if not submit:
+            return
+
         # get interactive confirmation
-        if submit:
-            inp = ""
-            try:
-                while inp not in ("y", "n"):
-                    inp = input("submit? (y/n): ").lower()
-            except KeyboardInterrupt:
-                print("aborted")
-                return
+        inp = ""
+        try:
+            while inp not in ("y", "n"):
+                inp = input("⤴️  submit? (y/n): ").lower()
             submit = inp == "y"
+        except KeyboardInterrupt:
+            print("aborted")
+            return
+
+        # optionally stop
+        if not submit:
+            return
 
         # actual submission
-        if submit:
-            setattr(self.puzzle, f"answer_{part}", result)
+        setattr(self.puzzle, f"answer_{part}", result)
+
+
+def human_time_diff(seconds: float) -> str:
+    """
+    Convert a time in seconds to a human-readable string.
+    """
+    if seconds < 1e-6:
+        return f"{seconds * 1e9:.1f} ns"
+    if seconds < 1e-3:
+        return f"{seconds * 1e6:.1f} µs"
+    if seconds < 1:
+        return f"{seconds * 1e3:.1f} ms"
+    return f"{seconds:.2f} s"
