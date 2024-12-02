@@ -16,7 +16,7 @@ def solution(data: list[str], part: Part) -> int | None:
         levels.append(list(map(int, line.split())))
 
     # helper to check if a sequence is safe
-    def is_safe(seq: list[int], skip: int = -1) -> bool:
+    def is_safe(seq: list[int], *, skip: int = -1) -> bool:
         # compute diffs, optionally skipping one element
         idxs = list(range(len(seq)))
         if skip >= 0:
@@ -30,7 +30,7 @@ def solution(data: list[str], part: Part) -> int | None:
         1 for seq in levels
         if (
             is_safe(seq) or
-            (part == "b" and any(is_safe(seq, i) for i in range(len(seq))))
+            (part == "b" and any(is_safe(seq, skip=i) for i in range(len(seq))))
         )
     )
 
