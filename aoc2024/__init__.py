@@ -4,12 +4,14 @@ from __future__ import annotations
 
 import os
 import time
-import inspect
 from typing import Callable, Literal
+
+
+this_dir = os.path.dirname(os.path.abspath(__file__))
+data_dir = os.path.join(os.path.dirname(this_dir), "data")
 
 # set the aoc session when missing
 if not os.getenv("AOC_SESSION", ""):
-    this_dir = os.path.dirname(os.path.abspath(__file__))
     session_file = os.path.join(os.path.dirname(this_dir), ".aoc_session")
     if os.path.exists(session_file):
         with open(session_file) as f:
@@ -94,8 +96,8 @@ class Solver:
             puzzle_id += f"_example{example_index or ''}"
 
         # fetch data from local file, fallback to aocd
-        data_dir = os.path.dirname(inspect.getfile(func))
-        data_name = f"example{example_index or ''}.txt" if example else "data.txt"
+        data_name = f"example{example_index or ''}" if example else "data"
+        data_name = f"{data_name}_{self.day:02d}.txt"
         data_path = os.path.join(data_dir, data_name)
         if os.path.exists(data_path):
             data_raw = open(data_path).read()
@@ -120,7 +122,7 @@ class Solver:
 
         # run the solution function
         t1 = time.perf_counter()
-        runtime = 0
+        runtime: float = 0
         try:
             result = func(data, part)
         except:

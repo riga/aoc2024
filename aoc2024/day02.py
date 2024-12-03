@@ -11,7 +11,7 @@ from aoc2024 import Solver, Part
 
 def solution(data: list[str], part: Part) -> int | None:
     # parse levels
-    levels: list[int] = []
+    levels: list[list[int]] = []
     for line in data:
         levels.append(list(map(int, line.split())))
 

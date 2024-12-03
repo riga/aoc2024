@@ -12,8 +12,8 @@ from aoc2024 import Solver, Part
 
 
 def solution(data: list[str], part: Part) -> int | None:
-    # treat data as a single string
-    data = "".join(data)
+    # treat data as a single line
+    line = "".join(data)
 
     # precompile the regex looking for mul() calls
     cre = re.compile(r"mul\((\d{1,3}),(\d{1,3})\)")
@@ -21,26 +21,26 @@ def solution(data: list[str], part: Part) -> int | None:
     # part a: just sum products of all matches
     if part == "a":
         sum_a = sum(
-            int(a) * int(b)
+            a * b
             for a, b in (
-                tuple(map(int, m.groups()))
-                for m in cre.finditer(data)
+                map(int, m.groups())
+                for m in cre.finditer(line)
             )
         )
         return sum_a
 
     # part b: split by stop instruction "don't()" and in each chunk,
     # search for mul() calls after the first "do()"
-    data = f"do(){data}"
+    line = f"do(){line}"
     sum_b = 0
-    for chunk in data.split("don't()"):
+    for chunk in line.split("don't()"):
         offset = chunk.find("do()")
         if offset == -1:
             continue
         sum_b += sum(
-            int(a) * int(b)
+            a * b
             for a, b in (
-                tuple(map(int, m.groups()))
+                map(int, m.groups())
                 for m in cre.finditer(chunk[offset + 4:])
             )
         )
