@@ -136,7 +136,7 @@ class Solver:
         print(f"✨ solution : {result}")
         if not example and (truth := getattr(self, f"truth_{part}")) is not None:
             print(f"{'✅' if result == truth else '❌'} truth    : {truth}")
-        print(f"⏱️  runtime  : {human_time_diff(runtime)}")
+        print(f"⏰ runtime  : {human_time_diff(runtime)}")
 
         # check if submission is an option
         if example:
@@ -146,7 +146,7 @@ class Solver:
                 print("🚫 submission requires AOC_SESSION")
                 submit = False
             elif self.puzzle.answered(part):
-                print("🎖️  puzzle already answered")
+                print("🎖️ puzzle already successfully submitted")
                 submit = False
 
         # optionally stop
@@ -168,7 +168,9 @@ class Solver:
             return
 
         # actual submission
-        setattr(self.puzzle, f"answer_{part}", result)
+        val = self.puzzle._coerce_val(result)
+        if getattr(self.puzzle, f"answer_{part}", None) != val:
+            self.puzzle._submit(value=val, part=part, reopen=False)
 
 
 def human_time_diff(seconds: float) -> str:
