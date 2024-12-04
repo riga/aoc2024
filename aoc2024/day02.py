@@ -36,9 +36,4 @@ def solution(data: list[str], part: Part) -> int | None:
 
 
 if __name__ == "__main__":
-    Solver(
-        year=2024,
-        day=2,
-        truth_a=564,
-        truth_b=604,
-    ).solve(solution, part="x", submit=False)
+    Solver(year=2024, day=2, truth_a=564, truth_b=604).solve(solution, part="x", submit=False)

@@ -159,7 +159,7 @@ class Solver:
         inp = ""
         try:
             while inp not in ("y", "n"):
-                inp = input("⤴️  submit? (y/n): ").lower()
+                inp = input("⤴️ submit? (y/n): ").lower()
             submit = inp == "y"
         except KeyboardInterrupt:
             print("aborted")
