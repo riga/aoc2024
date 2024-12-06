@@ -34,7 +34,7 @@ def solution(data: list[str], part: Part) -> int | None:
     }
 
     # helper to walk over the map, returns visited points or an empty set in case a loop is found
-    def walk(data: list[str], insert_obstacle: Point | None = None) -> Points:
+    def walk(*, insert_obstacle: Point | None = None) -> Points:
         seen: Points = set()
         seen_dir: PointsWithDirection = set()
         point, direction = start, up
@@ -56,14 +56,14 @@ def solution(data: list[str], part: Part) -> int | None:
                 point = inext, jnext
 
     # get points visited by the guard, don't assume a loop in part a
-    points = walk(data)
+    points = walk()
     if part == "a":
         return len(points)
 
     # brute force in part b, checking potential obstacles at all positions we visited in part a
     return sum(
         1 for point in points - {start}
-        if not walk(data, insert_obstacle=point)
+        if not walk(insert_obstacle=point)
     )
 
 
