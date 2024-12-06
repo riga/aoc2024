@@ -61,7 +61,13 @@ def solution(data: list[str], part: Part) -> int | None:
         return len(points)
 
     # part b
-    # brute force, checking potential obstacles at all positions we visited in part a
+    # the optimal solution would be:
+    #   - at every new position, open up a temporary walking branch after switching the next direction
+    #   - go straight on this branch
+    #   - if an obstacle is found or the end of the map is reaches, stop this branch and make a step on the main branch
+    #   - if a points is found that was already seen while walking in the same direction, an obstacle could have been
+    #     placed in front of the point the temporary branch started from
+    # ... but brute force is also rather quick, so check potential obstacles at all positions we visited in part a
     return sum(
         1 for point in points - {start}
         if not walk(insert_obstacle=point)
