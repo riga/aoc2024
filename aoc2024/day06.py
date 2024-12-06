@@ -60,7 +60,8 @@ def solution(data: list[str], part: Part) -> int | None:
     if part == "a":
         return len(points)
 
-    # brute force in part b, checking potential obstacles at all positions we visited in part a
+    # part b
+    # brute force, checking potential obstacles at all positions we visited in part a
     return sum(
         1 for point in points - {start}
         if not walk(insert_obstacle=point)
