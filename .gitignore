@@ -5,3 +5,5 @@ __pycache__
 .vscode
 .aoc_session
 example*.txt
+times*.json
+show_times.py

@@ -100,7 +100,8 @@ class Solver:
         data_name = f"{data_name}_{self.day:02d}.txt"
         data_path = os.path.join(data_dir, data_name)
         if os.path.exists(data_path):
-            data_raw = open(data_path).read()
+            with open(data_path, "r") as f:
+                data_raw = f.read()
         else:
             data_raw = (self.puzzle.examples[example_index] if example else self.puzzle).input_data
             with open(data_path, "w") as f:

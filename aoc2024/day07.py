@@ -15,7 +15,7 @@ def solution(data: list[str], part: Part) -> int | None:
     # helper that checks if a target value can be reached by combining a current value
     # and a list of remaining numbers (dp style)
     def check(target: int, cur: int, nums: tuple[int, ...]) -> bool:
-        # stop in case thr current value is already greater
+        # stop in case the current value is already greater
         if cur > target:
             return False
         # at the end, check for equality
