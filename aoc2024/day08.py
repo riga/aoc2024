@@ -8,40 +8,25 @@ from __future__ import annotations
 
 import itertools
 from collections import defaultdict
-from dataclasses import dataclass
 
 from aoc2024 import Solver, Part
 
 
-@dataclass
-class Point:
-    i: int
-    j: int
-
-    def __hash__(self) -> int:
-        return hash((self.i, self.j))
-
-    def __add__(self, other: Point) -> Point:
-        return Point(self.i + other.i, self.j + other.j)
-
-    def __sub__(self, other: Point) -> Point:
-        return Point(self.i - other.i, self.j - other.j)
-
-    def in_bounds(self, imax: int, jmax: int) -> bool:
-        return 0 <= self.i < imax and 0 <= self.j < jmax
-
-
 def solution(data: list[str], part: Part) -> int | None:
-    # parse into per-type antenna locations
+    # parse into per-type antenna locations, stored as complex numbers (real -> i, imag -> j)
     imax, jmax = len(data), len(data[0])
-    antennas: defaultdict[str, set[Point]] = defaultdict(set)
+    antennas: defaultdict[str, set[complex]] = defaultdict(set)
     for i in range(imax):
         for j in range(jmax):
             if data[i][j] != ".":
-                antennas[data[i][j]].add(Point(i, j))
+                antennas[data[i][j]].add(complex(i, j))
+
+    # helper to check if a point is within the map bounds
+    def within_bounds(p: complex, imax: int, jmax: int) -> bool:
+        return 0 <= p.real < imax and 0 <= p.imag < jmax
 
     # find unique antinode locations evaluating all pairs of same antennas
-    antinodes: set[Point] = set()
+    antinodes: set[complex] = set()
     for points in antennas.values():
         for p1, p2 in itertools.combinations(points, 2):
             # difference vector
@@ -49,19 +34,19 @@ def solution(data: list[str], part: Part) -> int | None:
 
             if part == "a":
                 # check single locations on either side
-                if (p := p2 + diff).in_bounds(imax, jmax):
+                if within_bounds((p := p2 + diff), imax, jmax):
                     antinodes.add(p)
-                if (p := p1 - diff).in_bounds(imax, jmax):
+                if within_bounds((p := p1 - diff), imax, jmax):
                     antinodes.add(p)
 
             else:  # "b"
                 # check all locations on either side
                 p = p2
-                while p.in_bounds(imax, jmax):
+                while within_bounds(p, imax, jmax):
                     antinodes.add(p)
                     p += diff
                 p = p1
-                while p.in_bounds(imax, jmax):
+                while within_bounds(p, imax, jmax):
                     antinodes.add(p)
                     p -= diff
 
