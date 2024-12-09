@@ -20,12 +20,9 @@ def solution(data: list[str], part: Part) -> int | None:
     # helper to add to the checksum and advance the current index
     index_checksum = [0, 0]
     def add(fid: int, n: int) -> None:
+        # increment checksum, them advance position (formula same as looping manually)
         index_checksum[1] += fid * (2 * index_checksum[0] + n - 1) * n // 2
         index_checksum[0] += n
-        # same as
-        # for _ in range(n):
-        #     index_checksum[1] += fid * index_checksum[0]
-        #     index_checksum[0] += 1
 
     if part == "a":
         # switch between handling a file and free space during traversal
@@ -67,16 +64,15 @@ def solution(data: list[str], part: Part) -> int | None:
                 space = stream.popleft()
                 for i in range(len(file_ids) - 1, -1, -1):
                     # skip if already moved
-                    fid = file_ids[i]
-                    if fid in moved:
+                    if (fid := file_ids[i]) in moved:
                         continue
                     # check if file fits into space
-                    if stream[2 * i] <= space:
-                        add(fid, stream[2 * i])
+                    if (n := stream[2 * i]) <= space:
+                        add(fid, n)
                         moved.add(fid)
                         # reduce space and potentially stop
-                        space -= stream[2 * i]
-                        if space <= 0:
+                        space -= n
+                        if space == 0:
                             break
                 else:
                     # handling remaining space, just treat as zeros
