@@ -78,8 +78,8 @@ def solution(data: list[str], part: Part) -> int | None:
                         space -= stream[2 * i]
                         if space <= 0:
                             break
-                # handling remaining space, just treat as zeros
-                if space:
+                else:
+                    # handling remaining space, just treat as zeros
                     add(0, space)
             # toggle mode
             is_file = not is_file

@@ -116,7 +116,7 @@ class Solver:
         header = f"🎄 {puzzle_id}"
         if self.has_session:
             header += f"  ─  {self.puzzle.title}"
-        header += f"  ─  {len(data)} data lines"
+        header += f"  ─  {len(data)} data line{'' if len(data) == 1 else 's'}"
         header += " 🎄"
         width = max(len(header) + 2, 40)
         print(f"{'━' * width}\n{header}\n{'─' * width}")
