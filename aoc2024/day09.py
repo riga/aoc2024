@@ -59,12 +59,9 @@ def solution(data: list[str], part: Part) -> int | None:
         while stream:
             if is_file:
                 fid, n = file_ids.popleft(), stream.popleft()
-                # when already moved (during space handling), just move checksome pointer, otherwise add
-                if fid in moved:
-                    add(0, n)
-                else:
-                    add(fid, n)
-                    moved.add(fid)
+                # when already moved (during space handling), just move checksum pointer, otherwise add
+                add(0 if fid in moved else fid, n)
+                moved.add(fid)
             else:
                 # to fill space, traverse backwards through stream and fill with matching files until filled
                 space = stream.popleft()
