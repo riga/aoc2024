@@ -13,10 +13,11 @@ from aoc2024 import Solver, Part
 
 def solution(data: list[str], part: Part) -> int | None:
     # convert to complex mapping
-    heights: dict[complex, int] = {}
-    for i, line in enumerate(data):
-        for j, c in enumerate(line):
-            heights[complex(i, j)] = int(c)
+    heights: dict[complex, int] = {
+        complex(i, j): int(c)
+        for i, line in enumerate(data)
+        for j, c in enumerate(line)
+    }
 
     # find heads
     heads = [p for p, h in heights.items() if h == 0]
