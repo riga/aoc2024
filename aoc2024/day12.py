@@ -48,7 +48,7 @@ def solution(data: list[str], part: Part) -> int | None:
                         f = e  # for better readability
                         if f not in points and (f, d) not in fences_seen:
                             factor += 1
-                        # walk along the fnece in both neighbor directions and find others that belong to the same side
+                        # walk along the fence in both neighbor directions and find others that belong to the same side
                         # (complex direction multiplied by +-1j results in the desired perpendicular direction :))
                         for sign in (1, -1):
                             i = 0
