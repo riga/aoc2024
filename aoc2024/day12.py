@@ -53,7 +53,7 @@ def solution(data: list[str], part: Part) -> int | None:
                             i = 0
                             while True:
                                 # check if next neighbor is actually an edge to a point in the region
-                                n = p + d + sign * (d * 1j) * i
+                                n = e + sign * (d * 1j) * i
                                 if n in points or n - d not in points:
                                     break
                                 edges_seen.add((n, d))
