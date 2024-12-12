@@ -97,7 +97,7 @@ class Solver:
 
         # fetch data from local file, fallback to aocd
         data_name = f"example{example_index or ''}" if example else "data"
-        data_name = f"{data_name}_{self.day:02d}.txt"
+        data_name = f"{data_name}{self.day:02d}.txt"
         data_path = os.path.join(data_dir, data_name)
         if os.path.exists(data_path):
             with open(data_path, "r") as f:
