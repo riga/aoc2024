@@ -27,14 +27,14 @@ def solution(data: list[str], part: Part) -> int | None:
         points_left = set(points)
         while points_left:
             area, factor = 0, 0  # factor = perimeter for part a, edges for part b
-            # remember seen edges for part b including direction info
-            edges_seen: set[tuple[complex, complex]] = set()
+            # remember seen fence parse for part b including direction info
+            fences_seen: set[tuple[complex, complex]] = set()
             # traverse the region
             q = deque([points_left.pop()])
             while q:
                 p = q.popleft()
                 area += 1
-                # check for edges in all directions
+                # check for next point in all directions
                 for d in directions:
                     if (e := p + d) in points_left:
                         q.append(e)
@@ -44,19 +44,20 @@ def solution(data: list[str], part: Part) -> int | None:
                         if e not in points:
                             factor += 1
                     else:  # "b"
-                        # increment number of sides when the edge was not seen before
-                        if e not in points and (e, d) not in edges_seen:
+                        # increment number of sides when e is a fence and was not seen before
+                        f = e  # for better readability
+                        if f not in points and (f, d) not in fences_seen:
                             factor += 1
-                        # walk along the edge in both neighbor directions and find others that belong to the same side
+                        # walk along the fnece in both neighbor directions and find others that belong to the same side
                         # (complex direction multiplied by +-1j results in the desired perpendicular direction :))
                         for sign in (1, -1):
                             i = 0
                             while True:
-                                # check if next neighbor is actually an edge to a point in the region
-                                n = e + sign * (d * 1j) * i
+                                # check if next neighbor is actually a fence to a edge (n - d) in the region
+                                n = f + sign * (d * 1j) * i
                                 if n in points or n - d not in points:
                                     break
-                                edges_seen.add((n, d))
+                                fences_seen.add((n, d))
                                 i += 1
             # add price
             price += area * factor
