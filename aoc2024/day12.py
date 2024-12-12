@@ -53,7 +53,7 @@ def solution(data: list[str], part: Part) -> int | None:
                         for sign in (1, -1):
                             i = 0
                             while True:
-                                # check if next neighbor is actually a fence to a edge (n - d) in the region
+                                # check if next neighbor is actually a fence to an edge (n - d) in the same region
                                 n = f + sign * (d * 1j) * i
                                 if n in points or n - d not in points:
                                     break
