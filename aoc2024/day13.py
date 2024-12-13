@@ -43,8 +43,8 @@ def solution(data: list[str], part: Part) -> int | None:
         ))
 
     # strategy: two unknowns and two equations, so we can just solve analytically (by hand or via matrix inversion);
-    #           however, there is an edge case if the buttons result in linear independent moves (i.e., they construct
-    #           an invertible matrix), in which case a more iterative approach is needed; knowing aoc, this is likely
+    #           however, there is an edge case if the buttons result in linear independent moves (i.e., they construct a
+    #           non-invertible matrix), in which case a more iterative approach is needed; knowing aoc, this is likely
     #           not realized in the puzzle input, but still check
 
     tokens = 0
