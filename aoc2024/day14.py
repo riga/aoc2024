@@ -79,13 +79,13 @@ def solution(data: list[str], part: Part) -> int | None:
 
     for t in range(1, 100_001):
         # advance each robot, remember the x coordinates of robots per y coordinate for the line check
-        x_per_y: dict[int, list[int]] = defaultdict(list)
+        xs_per_y: dict[int, list[int]] = defaultdict(list)
         for robot in robots:
             robot.p += robot.v
             robot.p = complex(robot.x % w, robot.y % h)
-            heapq.heappush(x_per_y[robot.y], robot.x)
+            heapq.heappush(xs_per_y[robot.y], robot.x)
         # check if there is a straight line
-        for xs in x_per_y.values():
+        for xs in xs_per_y.values():
             if has_line(xs):
                 if interactive:
                     # print robots
