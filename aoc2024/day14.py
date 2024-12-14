@@ -68,6 +68,10 @@ def solution(data: list[str], part: Part) -> int | None:
     def has_line(xs: list[int], min_len: int = 10) -> bool:
         last_x, n = -1, 0
         while xs:
+            # stop early
+            if len(xs) < min_len - n:
+                return False
+            # check if next value connects to last one
             if (x := heapq.heappop(xs)) == last_x + 1:
                 n += 1
                 if n == min_len:
