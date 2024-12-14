@@ -32,6 +32,8 @@ class Robot:
 
 def solution(data: list[str], part: Part) -> int | None:
     w, h = 101, 103
+
+    # parse input
     robots: list[Robot] = []
     cre = re.compile(r"p=(\d+),(\d+) v=(-?\d+),(-?\d+)$")
     for line in data:
@@ -62,15 +64,16 @@ def solution(data: list[str], part: Part) -> int | None:
     interactive = False  # disable for submission
 
     # helper function to check if there is a straight line
+    # (xs must be a heap and is modified in place)
     def has_line(xs: list[int], min_len: int = 10) -> bool:
-        last_x, l = -1, 0
+        last_x, n = -1, 0
         while xs:
             if (x := heapq.heappop(xs)) == last_x + 1:
-                l += 1
-                if l == min_len:
+                n += 1
+                if n == min_len:
                     return True
             else:
-                l = 0
+                n = 0
             last_x = x
         return False
 
@@ -80,7 +83,7 @@ def solution(data: list[str], part: Part) -> int | None:
         for robot in robots:
             robot.p += robot.v
             robot.p = complex(robot.x % w, robot.y % h)
-            heapq.heappush(x_per_y[robot.y], robot.x)  # likely overkill
+            heapq.heappush(x_per_y[robot.y], robot.x)
         # check if there is a straight line
         for xs in x_per_y.values():
             if has_line(xs):
