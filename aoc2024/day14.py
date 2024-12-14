@@ -93,7 +93,7 @@ def solution(data: list[str], part: Part) -> int | None:
                     while (inp := input("accept? y/n: ").strip()) not in {"y", "n"}:
                         continue
                     if inp == "n":
-                        continue
+                        break
                 return t
 
     raise ValueError("no solution found after 100k iterations :(")
