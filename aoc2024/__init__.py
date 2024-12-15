@@ -3,8 +3,9 @@
 from __future__ import annotations
 
 import os
+import sys
 import time
-from typing import Callable, Literal
+from typing import Callable, Literal, Any, Self
 
 
 this_dir = os.path.dirname(os.path.abspath(__file__))
@@ -187,3 +188,131 @@ def human_time_diff(seconds: float) -> str:
     if seconds < 1:
         return f"{seconds * 1e3:.1f} ms"
     return f"{seconds:.2f} s"
+
+
+class Point:
+
+    NO_VALUE = -sys.maxsize
+
+    @staticmethod
+    def _cast_tuple(other: Any) -> tuple[int, int] | None:
+        if isinstance(other, Point):
+            return other.i, other.j
+        if isinstance(other, int):
+            # interpret as i value
+            return other, 0
+        if isinstance(other, float):
+            if not other.is_integer():
+                return None
+            return int(other), 0
+        if isinstance(other, complex):
+            # parts must be integers
+            if not other.real.is_integer() or not other.imag.is_integer():
+                return None
+            return int(other.real), int(other.imag)
+        if isinstance(other, (list, tuple)) and len(other) == 2:
+            i, j = other
+            if isinstance(i, float):
+                if not i.is_integer():
+                    return None
+                i = int(i)
+            elif not isinstance(i, int):
+                return None
+            if isinstance(j, float):
+                if not j.is_integer():
+                    return None
+                j = int(j)
+            elif not isinstance(j, int):
+                return None
+            return i, j
+        return None
+
+    def __init__(
+        self,
+        i: Point | int | float | complex | list[int | float] | tuple[int | float, int | float] = NO_VALUE,
+        j: int = NO_VALUE,
+        /,
+    ) -> None:
+        super().__init__()
+
+        # rearrange values under certain conditions
+        if j == self.NO_VALUE:
+            if i == self.NO_VALUE:
+                i = j = 0
+            else:
+                tpl = self._cast_tuple(i)
+                if tpl is not None:
+                    i, j = tpl
+        elif i == self.NO_VALUE:
+            i = 0
+
+        # final validation
+        if not isinstance(i, int) or not isinstance(j, int):
+            raise ValueError(f"invalid values for {self.__class__.__name__}: {i}, {j}")
+
+        # store values
+        self.i = i
+        self.j = j
+
+    def __repr__(self) -> str:
+        return f"({self.i}, {self.j})"
+
+    def __str__(self) -> str:
+        return self.__repr__()
+
+    def __hash__(self) -> int:
+        return hash((self.i, self.j))
+
+    def __bool__(self) -> bool:
+        return self.i != 0 and self.j != 0
+
+    def __eq__(self, other: Any) -> bool:
+        tpl = self._cast_tuple(other)
+        return False if tpl is None else tpl == (self.i, self.j)
+
+    def __neg__(self) -> Self:
+        return self.__class__(-self.i, -self.j)
+
+    def __add__(self, other: Any) -> Self:
+        tpl = self._cast_tuple(other)
+        if tpl is None:
+            raise TypeError(f"unsupported operand type(s) for +: '{type(self)}' and '{type(other)}'")
+        return self.__class__(self.i + tpl[0], self.j + tpl[1])
+
+    def __radd__(self, other: Any) -> Self:
+        tpl = self._cast_tuple(other)
+        if tpl is None:
+            raise TypeError(f"unsupported operand type(s) for +: '{type(other)}' and '{type(self)}'")
+        return self.__class__(tpl[0] + self.i, tpl[1] + self.j)
+
+    def __iadd__(self, other: Any) -> Self:
+        tpl = self._cast_tuple(other)
+        if tpl is None:
+            raise TypeError(f"unsupported operand type(s) for +: '{type(self)}' and '{type(other)}'")
+        self.i += tpl[0]
+        self.j += tpl[1]
+        return self
+
+    def __sub__(self, other: Any) -> Self:
+        tpl = self._cast_tuple(other)
+        if tpl is None:
+            raise TypeError(f"unsupported operand type(s) for -: '{type(self)}' and '{type(other)}'")
+        return self.__class__(self.i - tpl[0], self.j - tpl[1])
+
+    def __rsub__(self, other: Any) -> Self:
+        tpl = self._cast_tuple(other)
+        if tpl is None:
+            raise TypeError(f"unsupported operand type(s) for -: '{type(other)}' and '{type(self)}'")
+        return self.__class__(tpl[0] - self.i, tpl[1] - self.j)
+
+    def __isub__(self, other: Any) -> Self:
+        tpl = self._cast_tuple(other)
+        if tpl is None:
+            raise TypeError(f"unsupported operand type(s) for -: '{type(self)}' and '{type(other)}'")
+        self.i -= tpl[0]
+        self.j -= tpl[1]
+        return self
+
+    @property
+    def complex(self) -> complex:
+        return complex(self.i, self.j)
