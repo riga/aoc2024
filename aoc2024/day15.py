@@ -61,29 +61,29 @@ def solution(data: list[str], part: Part) -> int | None:
     find_colliding_boxes = functools.partial(_find_collisions, boxes, box_dim)
 
     # helper to find new positions of objects after a seed position with some dimension was potentially moved
-    # retruns None if any (!) collision with a wall is detected
+    # returns None if any (!) collision with a wall was detected
     def get_new_positions(seed: Point, m: Direction, dim: Dim) -> list[Point] | None:
         # get the new position and check if it collides with walls
-        if find_colliding_walls((q := seed + m), dim):
+        q = seed + m
+        if find_colliding_walls(q, dim):
             return None
         # build new positions, always putting the updated seed first
         pos = [q]
         # check colliding boxes, removing the seed object to avoid self-collisions
         for b in find_colliding_boxes(q, dim) - {seed}:
-            # stop of any box cannot be moved
+            # stop if any box cannot be moved, otherwise add
             if (b_pos := get_new_positions(b, m, box_dim)) is None:
                 return None
-            # add
             pos.extend(b_pos)
         return pos
 
     # perform moves
     for m in moves:
-        # find positions of new objects if any move is possible
+        # find positions of new objects if moving all of them is possible
         if (positions := get_new_positions(robot, m, robot_dim)):
             # position 0 is the robot
             robot = positions[0]
-            # all others are new boxes, so first remove old ones
+            # all others are moved boxes, so first remove original ones
             boxes -= {b - m for b in positions[1:]}
             boxes |= set(positions[1:])
 
