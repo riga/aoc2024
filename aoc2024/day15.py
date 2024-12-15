@@ -8,12 +8,7 @@ from __future__ import annotations
 
 import functools
 
-from aoc2024 import Solver, Part, Point
-
-
-# derived types
-class Dim(Point): pass  # noqa: E701
-class Direction(Point): pass  # noqa: E701
+from aoc2024 import Solver, Part, Point, Dim, Direction
 
 
 def solution(data: list[str], part: Part) -> int | None:

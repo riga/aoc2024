@@ -346,8 +346,25 @@ class Point:  # noqa
     def complex(self) -> complex:
         return complex(self.i, self.j)
 
+    @property
+    def area(self) -> int:
+        return self.i * self.j
+
     def scale(self, factor: Point | InterpretableTypes, inplace: bool = False) -> Self:
         if inplace:
             self *= factor
             return self
         return self * factor
+
+
+# derived types
+class Dim(Point):
+    pass
+
+
+class Direction(Point):
+    pass
+
+
+class Area(Point):
+    pass
