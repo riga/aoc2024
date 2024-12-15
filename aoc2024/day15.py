@@ -6,8 +6,6 @@ https://adventofcode.com/2024/day/15
 
 from __future__ import annotations
 
-import functools
-
 from aoc2024 import Solver, Part, Point, Dim, Direction
 
 
@@ -41,7 +39,7 @@ def solution(data: list[str], part: Part) -> int | None:
             moves.extend(move_map[char] for char in line)
 
     # helper to find top-left coordinates of objects that collide with a specific seed object given their dimensions
-    def _find_collisions(objects: set[Point], object_dim: Dim, seed: Point, seed_dim: Dim) -> set[Point]:
+    def find_collisions(objects: set[Point], object_dim: Dim, seed: Point, seed_dim: Dim) -> set[Point]:
         start = seed - object_dim + (1, 1)  # minimum overlap
         stop = seed + seed_dim
         return {
@@ -51,21 +49,17 @@ def solution(data: list[str], part: Part) -> int | None:
             if (q := Point(i, j)) in objects
         }
 
-    # partials for walls and boxes
-    find_colliding_walls = functools.partial(_find_collisions, walls, wall_dim)
-    find_colliding_boxes = functools.partial(_find_collisions, boxes, box_dim)
-
     # helper to find new positions of objects after a seed position with some dimension was potentially moved
     # returns None if any (!) collision with a wall was detected
     def get_new_positions(seed: Point, m: Direction, dim: Dim) -> list[Point] | None:
         # get the new position and check if it collides with walls
         q = seed + m
-        if find_colliding_walls(q, dim):
+        if find_collisions(walls, wall_dim, q, dim):
             return None
         # build new positions, always putting the updated seed first
         pos = [q]
         # check colliding boxes, removing the seed object to avoid self-collisions
-        for b in find_colliding_boxes(q, dim) - {seed}:
+        for b in find_collisions(boxes, box_dim, q, dim) - {seed}:
             # stop if any box cannot be moved, otherwise add
             if (b_pos := get_new_positions(b, m, box_dim)) is None:
                 return None
