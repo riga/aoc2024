@@ -10,39 +10,37 @@ import functools
 
 from aoc2024 import Solver, Part, Point
 
-# type aliases
-Dim = Point
-Direction = Point
+
+# derived types
+class Dim(Point): pass  # noqa: E701
+class Direction(Point): pass  # noqa: E701
 
 
 def solution(data: list[str], part: Part) -> int | None:
     # grid scaling depending on the puzzle
-    if part == "a":
-        scale = lambda cls, i, j: cls(i, j)
-    else:  # "b"
-        scale = lambda cls, i, j: cls(i, j * 2)
+    scale = (1, 1 if part == "a" else 2)
 
     # dimensions of objects
     robot_dim = Dim(1, 1)  # does not scale
-    box_dim = wall_dim = scale(Dim, 1, 1)
+    box_dim = wall_dim = Dim(1, 1) * scale
 
     # parse input
     walls: set[Point] = set()
     boxes: set[Point] = set()
     robot: Point = Point()
-    moves: list[Point] = []
+    moves: list[Direction] = []
     move_map = dict((c, Direction(v)) for c, v in zip("^v<>", (-1, 1, -1j, 1j)))
     for i, line in enumerate(data):
         if "#" in line:
             # find all box positions
             for j, char in enumerate(line):
                 if char == "O":
-                    boxes.add(scale(Point, i, j))
+                    boxes.add(Point(i, j) * scale)
                 if char == "#":
-                    walls.add(scale(Point, i, j))
+                    walls.add(Point(i, j) * scale)
             # find robot position
             if not robot and (p := line.find("@")) >= 0:
-                robot = scale(Point, i, p)
+                robot = Point(i, p) * scale
         else:
             # add moves
             moves.extend(move_map[char] for char in line)
