@@ -30,7 +30,7 @@ class Path:
 
 
 def solution(data: list[str], part: Part) -> int | None:
-    # find start and end points, remember walls and free spaces
+    # find start and end points, remember walls
     start: Point = Point()
     end: Point = Point()
     walls: set[Point] = set()
@@ -44,7 +44,7 @@ def solution(data: list[str], part: Part) -> int | None:
                 walls.add(Point(i, j))
 
     # walk one step at a time, always choosing the most promising path
-    directions = [Direction(0, 1), Direction(0, -1), Direction(1, 0), Direction(-1, 0)]  # EWSN
+    directions = [Direction(1j), Direction(-1j), Direction(1), Direction(-1)]  # EWSN
     paths: list[Path] = [Path(start, directions[0], 0, {start})]
     visited: dict[tuple[Point, Direction], int] = {}
     best_paths: list[Path] = []
@@ -74,14 +74,14 @@ def solution(data: list[str], part: Part) -> int | None:
             if (new_pos := path.pos + d) in walls:
                 continue
             # add to paths, either walk straight or turn
-            if d == path.dir:
+            if d is path.dir:
                 new_path = Path(new_pos, d, path.score + 1, path.visited | {new_pos})
             else:
                 new_path = Path(path.pos, d, path.score + 1000, path.visited)
             heapq.heappush(paths, new_path)
 
-    # return score or number of visited cells
     if part == "a":
+        # just return score
         return best_paths[0].score
 
     # part b: intersect visited fields
