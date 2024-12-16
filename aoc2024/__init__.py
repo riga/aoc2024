@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import os
-import sys
 import time
 from typing import Callable, Literal, Any, Self, TypeAlias
 
@@ -192,8 +191,6 @@ def human_time_diff(seconds: float) -> str:
 
 class Point:  # noqa
 
-    NO_VALUE = -sys.maxsize
-
     InterpretableTypes: TypeAlias = (
         int |
         float |
@@ -237,27 +234,27 @@ class Point:  # noqa
 
     def __init__(
         self,
-        i: Point | InterpretableTypes = NO_VALUE,
-        j: int = NO_VALUE,
+        i: Point | InterpretableTypes | None = None,
+        j: int | None = None,
         /,
     ) -> None:
         super().__init__()
 
         # rearrange values under certain conditions
-        if j == self.NO_VALUE:
-            if i == self.NO_VALUE:
+        if j is None:
+            if i is None:
                 i = j = 0
             else:
                 tpl = self._cast_tuple(i)
                 if isinstance(tpl, Exception):
                     raise tpl
                 i, j = tpl
-        elif i == self.NO_VALUE:
-            i = 0
 
         # final validation
-        if not isinstance(i, int) or not isinstance(j, int):
-            raise TypeError(f"invalid values for {self.__class__.__name__}: {i}, {j}")
+        if not isinstance(i, int):
+            raise TypeError(f"invalid i value for {self.__class__.__name__}: {i}")
+        if not isinstance(j, int):
+            raise TypeError(f"invalid j value for {self.__class__.__name__}: {j}")
 
         # store values
         self.i = i
@@ -368,3 +365,162 @@ class Direction(Point):
 
 class Area(Point):
     pass
+
+
+class Point3:
+
+    InterpretableTypes: TypeAlias = (
+        list[int | float] |
+        tuple[int | float, int | float, int | float]
+    )
+
+    @classmethod
+    def _cast_tuple(cls, other: Any) -> tuple[int, int, int] | Exception:
+        if isinstance(other, Point3):
+            return other.i, other.j, other.k
+        if isinstance(other, (list, tuple)) and len(other) == 3:
+            i, j, k = other
+            if isinstance(i, float):
+                if not i.is_integer():
+                    return ValueError(f"invalid value for {cls.__name__}: {other}")
+                i = int(i)
+            elif not isinstance(i, int):
+                return TypeError(f"invalid value for {cls.__name__}: {other}")
+            if isinstance(j, float):
+                if not j.is_integer():
+                    return ValueError(f"invalid value for {cls.__name__}: {other}")
+                j = int(j)
+            elif not isinstance(j, int):
+                return TypeError(f"invalid value for {cls.__name__}: {other}")
+            if isinstance(k, float):
+                if not k.is_integer():
+                    return ValueError(f"invalid value for {cls.__name__}: {other}")
+                k = int(k)
+            elif not isinstance(k, int):
+                return TypeError(f"invalid value for {cls.__name__}: {other}")
+            return i, j, k
+        return TypeError(f"invalid value for {cls.__name__}: {other}")
+
+    def __init__(
+        self,
+        i: Point3 | InterpretableTypes | int | None = None,
+        j: int | None = None,
+        k: int | None = None,
+        /,
+    ) -> None:
+        super().__init__()
+
+        # rearrange values under certain conditions
+        if j is None and k is None:
+            if i is None:
+                i = j = k = 0
+            else:
+                tpl = self._cast_tuple(i)
+                if isinstance(tpl, Exception):
+                    raise tpl
+                i, j, k = tpl
+
+        # final validation
+        if not isinstance(i, int):
+            raise TypeError(f"invalid i value for {self.__class__.__name__}: {i}")
+        if not isinstance(j, int):
+            raise TypeError(f"invalid j value for {self.__class__.__name__}: {j}")
+        if not isinstance(k, int):
+            raise TypeError(f"invalid k value for {self.__class__.__name__}: {k}")
+
+        # store values
+        self.i = i
+        self.j = j
+        self.k = k
+
+    def __repr__(self) -> str:
+        return f"({self.i}, {self.j}, {self.k})"
+
+    def __str__(self) -> str:
+        return self.__repr__()
+
+    def __hash__(self) -> int:
+        return hash((self.i, self.j, self.k))
+
+    def __bool__(self) -> bool:
+        return self.i != 0 and self.j != 0 and self.k != 0
+
+    def __eq__(self, other: Any) -> bool:
+        tpl = self._cast_tuple(other)
+        return False if tpl is None else tpl == (self.i, self.j, self.k)
+
+    def __neg__(self) -> Self:
+        return self.__class__(-self.i, -self.j, -self.k)
+
+    def __add__(self, other: Point3 | InterpretableTypes) -> Self:
+        tpl = self._cast_tuple(other)
+        if isinstance(tpl, Exception):
+            raise TypeError(f"unsupported operand type(s) for +: '{type(self)}' and '{type(other)}'")
+        return self.__class__(self.i + tpl[0], self.j + tpl[1], self.k + tpl[2])
+
+    def __radd__(self, other: Point3 | InterpretableTypes) -> Self:
+        tpl = self._cast_tuple(other)
+        if isinstance(tpl, Exception):
+            raise TypeError(f"unsupported operand type(s) for +: '{type(other)}' and '{type(self)}'")
+        return self.__class__(tpl[0] + self.i, tpl[1] + self.j, tpl[2] + self.k)
+
+    def __iadd__(self, other: Point3 | InterpretableTypes) -> Self:
+        tpl = self._cast_tuple(other)
+        if isinstance(tpl, Exception):
+            raise TypeError(f"unsupported operand type(s) for +: '{type(self)}' and '{type(other)}'")
+        self.i += tpl[0]
+        self.j += tpl[1]
+        self.k += tpl[2]
+        return self
+
+    def __sub__(self, other: Point3 | InterpretableTypes) -> Self:
+        tpl = self._cast_tuple(other)
+        if isinstance(tpl, Exception):
+            raise TypeError(f"unsupported operand type(s) for -: '{type(self)}' and '{type(other)}'")
+        return self.__class__(self.i - tpl[0], self.j - tpl[1], self.k - tpl[2])
+
+    def __rsub__(self, other: Point3 | InterpretableTypes) -> Self:
+        tpl = self._cast_tuple(other)
+        if isinstance(tpl, Exception):
+            raise TypeError(f"unsupported operand type(s) for -: '{type(other)}' and '{type(self)}'")
+        return self.__class__(tpl[0] - self.i, tpl[1] - self.j, tpl[2] - self.k)
+
+    def __isub__(self, other: Point3 | InterpretableTypes) -> Self:
+        tpl = self._cast_tuple(other)
+        if isinstance(tpl, Exception):
+            raise TypeError(f"unsupported operand type(s) for -: '{type(self)}' and '{type(other)}'")
+        self.i -= tpl[0]
+        self.j -= tpl[1]
+        self.k -= tpl[2]
+        return self
+
+    def __mul__(self, other: Point3 | InterpretableTypes) -> Self:
+        tpl = self._cast_tuple(other)
+        if isinstance(tpl, Exception):
+            raise TypeError(f"unsupported operand type(s) for *: '{type(self)}' and '{type(other)}'")
+        return self.__class__(self.i * tpl[0], self.j * tpl[1], self.k * tpl[2])
+
+    def __rmul__(self, other: Point3 | InterpretableTypes) -> Self:
+        tpl = self._cast_tuple(other)
+        if isinstance(tpl, Exception):
+            raise TypeError(f"unsupported operand type(s) for *: '{type(other)}' and '{type(self)}'")
+        return self.__class__(tpl[0] * self.i, tpl[1] * self.j, tpl[2] * self.k)
+
+    def __imul__(self, other: Point3 | InterpretableTypes) -> Self:
+        tpl = self._cast_tuple(other)
+        if isinstance(tpl, Exception):
+            raise TypeError(f"unsupported operand type(s) for *: '{type(self)}' and '{type(other)}'")
+        self.i *= tpl[0]
+        self.j *= tpl[1]
+        self.k *= tpl[2]
+        return self
+
+    @property
+    def volume(self) -> int:
+        return self.i * self.j * self.k
+
+    def scale(self, factor: Point3 | InterpretableTypes, inplace: bool = False) -> Self:
+        if inplace:
+            self *= factor
+            return self
+        return self * factor
