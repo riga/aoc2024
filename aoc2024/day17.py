@@ -61,7 +61,7 @@ def solution(data: list[str], part: Part) -> int | str | None:
         return ",".join(map(str, run(a, b, c)))
 
     # part b: running the program verbosely shows that the instructions repeat in a pattern
-    # run(prog, 1000, b, c, verbose=True)
+    # run(1000, b, c, verbose=True)
     # ->
     #   b = a % 8
     #   b = b ^ 1
@@ -72,12 +72,12 @@ def solution(data: list[str], part: Part) -> int | str | None:
     #   out -> b % 8
     #   ptr = 0
     # this can be inlined to
-    #   set a
-    #   out -> ((((a % 8) ^ 1) ^ 4) ^ (a // (1 << ((a % 8) ^ 1)))) % 8
-    #   a = a // 1<<3  # assumption: this is generic for all inputs
-    #   ptr 0
-    # so one could check from the back which a value matches the end of the program and then work towards the front
+    #   0: set a
+    #   1: out -> ((((a % 8) ^ 1) ^ 4) ^ (a // (1 << ((a % 8) ^ 1)))) % 8
+    #   2: a = a // 1<<3  # assumption: this is generic for all inputs
+    #   3: repeat 1
     # the update rule for a is a // 8 and is lossy, but to invert it, we can try all eight possible previous values :)
+    # so one could check from the back which a value matches the end of the program and then work towards the front
     # also, use the run() helper above instead of the inlined form since the latter might not generalize to all inputs
     q = deque([(len(prog) - 1, 0)])
     while q:
