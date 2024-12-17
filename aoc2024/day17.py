@@ -22,7 +22,7 @@ def solution(data: list[str], part: Part) -> int | str | None:
         combo = lambda i: i if i <= 3 else [a, b, c][i - 4]
         # helpers for logging things (part b)
         log = print if verbose else (lambda *args: None)
-        combo_str = lambda i: i if i <= 3 else "abc"[i - 4]
+        combo_str = lambda i: str(i) if i <= 3 else "abc"[i - 4]
         # process instructions
         out: list[int] = []
         ptr = 0
@@ -60,7 +60,7 @@ def solution(data: list[str], part: Part) -> int | str | None:
     if part == "a":
         return ",".join(map(str, run(a, b, c)))
 
-    # part b: running the program verbose showed that the instructions are repeated in a pattern
+    # part b: running the program verbosely shows that the instructions repeat in a pattern
     # run(prog, 1000, b, c, verbose=True)
     # ->
     #   b = a % 8
@@ -71,13 +71,13 @@ def solution(data: list[str], part: Part) -> int | str | None:
     #   b = b ^ c
     #   out -> b % 8
     #   ptr = 0
-    # this can be *inlined* to
+    # this can be inlined to
     #   set a
     #   out -> ((((a % 8) ^ 1) ^ 4) ^ (a // (1 << ((a % 8) ^ 1)))) % 8
     #   a = a // 1<<3  # assumption: this is generic for all inputs
     #   ptr 0
     # so one could check from the back which a value matches the end of the program and then work towards the front
-    # the update rule for a is 1 // 8 and is lossy, but to invert it, we can try all eight possible previous values :)
+    # the update rule for a is a // 8 and is lossy, but to invert it, we can try all eight possible previous values :)
     # also, use the run() helper above instead of the inlined form since the latter might not generalize to all inputs
     q = deque([(len(prog) - 1, 0)])
     while q:
