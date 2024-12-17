@@ -42,8 +42,8 @@ class Solver:
         *,
         year: int,
         day: int,
-        truth_a: int | None = None,
-        truth_b: int | None = None,
+        truth_a: int | str | None = None,
+        truth_b: int | str | None = None,
     ) -> None:
         super().__init__()
 
@@ -72,7 +72,7 @@ class Solver:
 
     def solve(
         self,
-        func: Callable[[list[str], Part], int | None],
+        func: Callable[[list[str], Part], int | str | None],
         /,
         *,
         part: Part,
