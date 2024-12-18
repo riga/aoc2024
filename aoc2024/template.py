@@ -9,7 +9,7 @@ from __future__ import annotations
 from aoc2024 import Solver, Part
 
 
-def solution(data: list[str], part: Part) -> int | None:
+def solution(data: list[str], part: Part) -> int | str | None:
     return None
 
 
