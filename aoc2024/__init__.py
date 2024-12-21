@@ -149,7 +149,7 @@ class Solver:
                 print("🚫 submission requires AOC_SESSION")
                 submit = False
             elif self.puzzle.answered(part):
-                print("🎖️ puzzle already successfully submitted")
+                print("🎖️ puzzle already submitted")
                 submit = False
 
         # optionally stop
