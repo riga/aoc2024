@@ -25,14 +25,6 @@ def solution(data: list[str], part: Part) -> int | str | None:
             elif c == "E":
                 end = complex(i, j)
 
-    # bounds helper
-    def in_bounds(pos: complex) -> bool:
-        return (0 <= pos.real < h) and (0 <= pos.imag < w)
-
-    # sign helper
-    def sign(x: int) -> int:
-        return 1 if x >= 0 else -1
-
     # initial walk starting from the end, storing the distance to the end
     # (assuming the path through the maze is unique, i.e., no loops possible, no dead ends)
     distances: dict[complex, int] = {}
@@ -44,17 +36,18 @@ def solution(data: list[str], part: Part) -> int | str | None:
         # just one step possible
         for d in directions:
             new_pos = pos + d
-            if in_bounds(new_pos) and new_pos not in walls and new_pos not in distances:
+            if (0 <= pos.real < h) and (0 <= pos.imag < w) and new_pos not in walls and new_pos not in distances:
                 pos = new_pos
                 steps += 1
                 break
         else:
             raise ValueError("wrong assumption about maze")
 
-    # go along path again, at each position scanning for shortcuts within a search window
-    cheats = set()
+    # go along the path again, at each position scanning for cheats within a search window
+    # each cheat is identified by its start and end points only!
     search_window = 2 if part == "a" else 20
     min_improvement = 100
+    cheats: set[tuple[complex, complex]] = set()
     for pos, steps_left in distances.items():
         # skip cases where no improvement is possible
         if steps_left < min_improvement:
