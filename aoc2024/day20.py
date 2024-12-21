@@ -6,8 +6,6 @@ https://adventofcode.com/2024/day/20
 
 from __future__ import annotations
 
-import more_itertools
-
 from aoc2024 import Solver, Part
 
 
@@ -55,7 +53,6 @@ def solution(data: list[str], part: Part) -> int | str | None:
 
     # go along path again, at each position scanning for shortcuts within a search window
     cheats = set()
-    start_ends = set()
     search_window = 2 if part == "a" else 20
     min_improvement = 100
     for pos, steps_left in distances.items():
@@ -71,23 +68,11 @@ def solution(data: list[str], part: Part) -> int | str | None:
                 # must be on path
                 if (new_pos := pos + diff) not in distances:
                     continue
-                # test
-                x = (pos, new_pos)
-                if x in start_ends:
-                    continue
-                start_ends.add(x)
                 # must be an improvement
                 if steps_left - (distances[new_pos] + abs(i) + abs(j)) < min_improvement:
                     continue
-                # determine all possible paths to go from pos to new_pos, call each one a cheat
-                for ds in more_itertools.distinct_permutations(abs(i) * (sign(i),) + abs(j) * (sign(j) * 1j,)):
-                    p, cheat = pos, []
-                    for d in ds:
-                        p += d
-                        if p in walls:
-                            cheat.append(p)
-                    if cheat:
-                        cheats.add(tuple(cheat))
+                # add the cheat, identified by the two positions
+                cheats.add((pos, new_pos))
 
     return len(cheats)
 
