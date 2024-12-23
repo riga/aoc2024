@@ -26,7 +26,7 @@ def solution(data: list[str], part: Part) -> int | str | None:
             secrets.append(secret)
         return secrets
 
-    # simulate all secreats
+    # simulate all secrets
     buyers_secrets: list[list[int]] = list(map(simulate_secrets, initial_secrets))
 
     # part a: return the sum of the 2000th secret per buyer
