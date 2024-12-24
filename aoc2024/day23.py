@@ -51,13 +51,13 @@ def solution(data: list[str], part: Part) -> int | str | None:
             for b, c in sorted_combinations(bs, 2):
                 # check if connected and any of the three starts with "t"
                 if c in connections.get(b, ()) and "t" in (a[0], b[0], c[0]):
-                    triplets.add(tuple(sorted((a, b, c))))
+                    triplets.add((a, b, c))
         return len(triplets)
 
     # part b: fully-connected subnetworks are defined by their overlap of connections (needs self-connections),
     # so for each possible size (starting at the maximum), loop through connections, build distinct combinations
     # of keys of the required size, and check if their overlap is the sequence of keys itself
-    for n in range(max(len(cons) for cons in connections.values()), 1, -1):
+    for n in range(max(map(len, connections.values())), 1, -1):
         for cons in connections.values():
             for keys in sorted_combinations(list(cons), n):
                 if set(keys) == set.intersection(*(connections[key] for key in keys)):
