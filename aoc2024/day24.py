@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import re
 from operator import and_, or_, xor
-from collections import deque, defaultdict
 from dataclasses import dataclass
 
 from aoc2024 import Solver, Part
@@ -57,8 +56,12 @@ def solution(data: list[str], part: Part) -> int | str | None:
         state = values.copy()
         return sum(pull_value(f"z{i:02d}", state) << i for i in range(n_outputs))
 
-    # part b main observation after a long dive into bit addition rules: when comparing actual and expected output bits,
-    # wrong gates can be identified standalone (!) if they fulfill any of the four conditions:
+    # part b main observation (after a long dive into bit addition rules):
+    # addition always consists of a well-defined sequence of gates, simulating a slightly bigger gate with three inputs,
+    # i.e, the two actual bit inputs and a potential carry bit that is 0 in the beginning; when checking the upstream
+    # dependencies of each z output, we can see this exact structure, as the carry bit being passed over and over again
+    # to the higher bit positions causes the most interconnections of the gate graph; following this observation, wrong
+    # gates can be identified fully standalone if they fulfill any of the four conditions:
     # 1. XOR gate in the graph other than the first or last layer (only x/y inputs and z outputs are allowed)
     # 2. XOR gate followed by an OR gate, and none of the inputs is the first x bit (x00)
     # 3. AND gate followed by a XOR gate, and none of the inputs is the first x bit (x00)
